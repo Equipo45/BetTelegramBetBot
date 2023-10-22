@@ -6,7 +6,7 @@ import { wrongSatusLogMsg } from '../logger.js'
 import { config } from 'dotenv'
 config()
 
-const BASE_URL = 'https://rest-api-lv.betburger.com'
+const BASE_URL = 'https://rest-api-pr.betburger.com'
 const VALUE_URL = '/api/v1/valuebets/bot_pro_search'
 const ARBITRAGE_URL = '/api/v1/arbs/bot_pro_search'
 
@@ -25,7 +25,7 @@ export async function getBetResponse (numberFilterArr = [1], arbitrage = false) 
     sort_by: 'valuebet_percent',
     excluded_bets: [],
     excluded_bk_events: [],
-    bookmakers2: ['Bet365', 'Bwin', 'Codere', 'Luckia', 'WilliamHill'],
+    bookmakers2: ['Bet365'],
     access_token: process.env.ACCESS_TOKEN,
     grouped: ''
   }
@@ -40,10 +40,15 @@ export async function getBetResponse (numberFilterArr = [1], arbitrage = false) 
     wrongSatusLogMsg('Failed while sending post to VALUE url' + e)
   }
 
-  return parseResponse(response)
+  return parseResponse(response?.data, arbitrage)
 }
 
-function parseResponse (response) {
-  if (response.errMsg || response.status >= 400) return { status: 400 }
-  return response.data
+function parseResponse (response, arbitrage) {
+  if (!response || response.errMsg || response.status >= 400) return { status: 400 }
+  if (arbitrage) return { arbitrage: true }
+  return {
+    Evento: response.bets[0].bookmaker_event_name,
+    Liga: response.bets[0].bookmaker_league_name,
+    Link: response.bets[0].direct_link
+  }
 }

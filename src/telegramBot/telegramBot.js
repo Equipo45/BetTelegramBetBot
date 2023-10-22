@@ -1,5 +1,4 @@
 import TelegramBot from 'node-telegram-bot-api'
-import schedule from 'node-schedule'
 import { correctSatusLogMsg, wrongSatusLogMsg } from '../logger.js'
 import { getBetResponse } from '../apiBetResponse/apiRequest.js'
 
@@ -13,12 +12,13 @@ const bot = new TelegramBot(botToken, { polling: true })
 async function checkAndSendNotifications () {
   try {
     const response = await getBetResponse()
-    bot.sendMessage(process.env.CHAT_ID, 'New bet request found: ' + JSON.stringify(response))
+    const stringResponse = `Evento: ${response.Evento} \nLiga: ${response.Liga} \nLink: ${response.Link}`
+    bot.sendMessage(process.env.CHAT_ID, '🧈Partido encontrado: \n' + stringResponse)
     correctSatusLogMsg('Message send ' + response)
   } catch (error) {
-    wrongSatusLogMsg('Error fetching bet data:', error)
+    wrongSatusLogMsg('Error fetching bet data: ' + error)
   }
 }
 
 // Schedule the function to run at a specific interval (e.g., every 1 minutes)
-export const intervalCalls = async time => schedule.scheduleJob(time, checkAndSendNotifications)
+export const intervalCalls = time => setInterval(checkAndSendNotifications, time)
