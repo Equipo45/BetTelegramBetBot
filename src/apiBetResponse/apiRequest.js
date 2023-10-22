@@ -1,7 +1,7 @@
 import axios from 'axios'
-import chalk from 'chalk'
 import path from 'node:path'
 import querystring from 'querystring'
+import { wrongSatusLogMsg } from '../logger.js'
 
 import { config } from 'dotenv'
 config()
@@ -37,7 +37,7 @@ export async function getBetResponse (numberFilterArr = [1], arbitrage = false) 
       status: 400,
       errMsg: 'Failed while sending post'
     }
-    console.log(chalk.red('Failed while sending post to VALUE url' + e))
+    wrongSatusLogMsg('Failed while sending post to VALUE url' + e)
   }
 
   return parseResponse(response)

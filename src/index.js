@@ -1,6 +1,8 @@
-import { getBetResponse } from './apiBetResponse/apiRequest.js'
+import { intervalCalls } from './telegramBot/telegramBot.js'
 
 async function main () {
-  console.log(await getBetResponse())
+  while (true) {
+    await intervalCalls('*/1 * * * *')
+  }
 }
 main()
